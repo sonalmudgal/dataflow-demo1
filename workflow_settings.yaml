@@ -1,5 +1,5 @@
 defaultProject: my-gcp-course-project1
 defaultLocation: US
-defaultDataset: dataform
+defaultDataset: dataflow
 defaultAssertionDataset: dataform_assertions
 dataformCoreVersion: 3.0.0

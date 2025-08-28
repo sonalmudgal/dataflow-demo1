@@ -1,0 +1,51 @@
+config {
+  type: "operations"
+}
+
+-- Step 1: Drop tables if they exist
+DROP TABLE IF EXISTS `my-gcp-course-project1.dataflow.stg_sales`;
+DROP TABLE IF EXISTS `my-gcp-course-project1.dataflow.clean_sales`;
+DROP TABLE IF EXISTS `my-gcp-course-project1.dataflow.sales_summary`;
+
+-- Step 2: Create stg_sales table and load from CSV
+CREATE TABLE `my-gcp-course-project1.dataflow.stg_sales` (
+  order_id STRING,
+  product_name STRING,
+  category STRING,
+  quantity INT64,
+  unit_price FLOAT64,
+  order_date DATE
+);
+
+LOAD DATA INTO `my-gcp-course-project1.dataflow.stg_sales`
+FROM FILES (
+  format = 'CSV',
+  uris = ['gs://my-gcp-course-bucket/dataform/sales.csv'],
+  skip_leading_rows = 1
+);
+
+-- Step 3: Create clean_sales with calculated total_price
+CREATE TABLE `my-gcp-course-project1.dataflow.clean_sales` AS
+SELECT
+  order_id,
+  product_name,
+  category,
+  quantity,
+  unit_price,
+  quantity * unit_price AS total_price,
+  order_date
+FROM
+  `my-gcp-course-project1.dataflow.stg_sales`
+WHERE
+  quantity > 0 AND unit_price > 0;
+
+-- Step 4: Create sales_summary aggregated by category
+CREATE TABLE `my-gcp-course-project1.dataflow.sales_summary` AS
+SELECT
+  category,
+  SUM(quantity) AS total_quantity,
+  SUM(total_price) AS total_revenue
+FROM
+  `my-gcp-course-project1.dataflow.clean_sales`
+GROUP BY
+  category;
