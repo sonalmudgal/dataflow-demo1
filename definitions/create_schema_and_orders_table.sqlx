@@ -1,0 +1,26 @@
+config {
+  type: "operations"
+}
+
+-- Create schema if it doesn't exist
+CREATE SCHEMA IF NOT EXISTS `my-gcp-course-project1.dataflow`
+OPTIONS(location = "US");
+
+-- Drop table if it already exists
+DROP TABLE IF EXISTS `my-gcp-course-project1.dataflow.orders_data`;
+
+-- Create table with sample data
+CREATE TABLE `my-gcp-course-project1.dataflow.orders_data` AS
+SELECT *
+FROM UNNEST([
+  STRUCT("ORD001" AS order_id, "Laptop" AS item, 75000.00 AS price, 1 AS quantity),
+  STRUCT("ORD002", "Mobile", 25000.50, 2),
+  STRUCT("ORD003", "Keyboard", 1200.00, 5),
+  STRUCT("ORD004", "Mouse", 600.00, 3),
+  STRUCT("ORD005", "Monitor", 15000.00, 1),
+  STRUCT("ORD006", "Printer", 8500.00, 1),
+  STRUCT("ORD007", "Router", 3000.00, 1),
+  STRUCT("ORD008", "Tablet", 18000.00, 2),
+  STRUCT("ORD009", "Headphones", 2000.00, 4),
+  STRUCT("ORD010", "Charger", 500.00, 3)
+]);
